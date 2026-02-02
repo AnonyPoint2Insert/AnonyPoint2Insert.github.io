@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Point2Insert</title>
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"> -->
+    <link rel="stylesheet" href="static/css/index.css">
+    <link rel="icon" href="click.svg" type="image/svg+xml">
+    <style type="text/css">
+        body {
+            background-color: rgb(10, 10, 10);
+        }
+        h2 {
+            color: white;
+            text-align: center;
+        }
+        li {
+            margin-top: 0.8em;
+            margin-left: -0.6em;
+        }
+        a {
+            color: hsl(204, 80%, 53%);
+            text-decoration: none;
+        }
+        p {
+            text-align: justify;
+        }
+        .container {
+            background-color: rgb(10, 10, 10);
+            margin-left: auto;
+            margin-right: auto;
+            padding-top: 32px;
+            padding-bottom: 32px;
+            padding-left: 32px;
+            padding-right: 32px;
+            border-radius: 8px;
+        }
+        .video-container {
+            display: flex;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .video-item {
+            flex: 0 0 50%;
+            box-sizing: border-box;
+        }
+        .video-item video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .video-grid {
+            column-count: 6;
+            column-gap: 16px;
+            margin: 0 auto;
+        }
+        .video-grid-item {
+            break-inside: avoid;
+            margin-bottom: 16px;
+        }
+        .video-grid-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .gradient {
+            background: linear-gradient(90deg, #4eb2ff .39%, #c3a0ff 51.23%, #ffa76d 100%);
+            background-clip: text;
+            color: transparent;
+        }
+        .title {
+            margin-top: 0px;
+            color: white;
+            font-size: 3rem;
+            text-align: center;
+        }
+        .subtitle {
+            margin-top: -8px;
+            font-size: 2.5rem;
+            text-align: center;
+        }
+        .authors {
+            color: white;
+            font-size: 1.25rem;
+            text-align: center;
+        }
+        .adjust-margin {
+            margin-top: -8px;
+            margin-bottom: 0px;
+        }
+        .link-button {
+            color: black;
+            background-color: white;
+            border-radius: 1024px;
+            padding-top: 0.5em;
+            padding-bottom: 0.5em;
+            padding-left: 1.25em;
+            padding-right: 1.25em;
+            margin-left: 8px;
+            margin-right: 8px;
+        }
+        .icon {
+            height: 1em;
+            margin-right: 0.25em;
+            vertical-align: -.125em;
+        }
+    </style>
+</head>
+
+
+<body>
+    <div class="container">
+        <h1 class="title"><span class="gradient" style="font-family: Comic Sans MS;">Point2Insert:</span> Video Object Insertion via Sparse Point Guidance</h1>
+        <div class="authors">
+            Anonymous Author
+        </div>
+    </div>
+    <div class="container" style="margin-top: -32px;">
+        <h1 class="subtitle"><span class="gradient">Demo Video</span></h1>
+        <div style="display: flex; justify-content: center; align-items: center; margin: 0 auto;">
+            <video src="Demo_anony.mp4" autoplay muted loop style="max-width: 100%; height: auto;"></video>
+        </div>
+    </div>
+    <!-- <section class="section hero is-light"> -->
+    <div class="abstract-container">
+         <h1 class="subtitle"><span class="gradient">Abstract</span></h1>
+        <div class="content has-text-justified">
+        <!-- TODO: Replace with your paper abstract -->
+        <p>
+        This paper introduces Point2Insert, a sparse-point-based framework for flexible and user-friendly object insertion in videos, motivated by the growing popularity of accurate, low-effort object placement. Existing approaches face two major challenges: mask-based insertion methods require labor-intensive mask annotations, while instruction-based methods struggle to place objects at precise locations. Point2Insert  addresses these issues by requiring only a small number of sparse points instead of dense masks, eliminating the need for tedious mask drawing. Specifically, it supports both positive and negative points to indicate regions that are suitable or unsuitable for insertion, enabling fine-grained spatial control over object locations. The training of Point2Insert  consists of two stages. In Stage 1, we train an insertion model that generates objects in given regions conditioned on either sparse-point prompts or a binary mask. In Stage 2, we further train the model on paired videos synthesized by an object removal model, adapting it to video insertion. Moreover, motivated by the higher insertion success rate of mask-guided editing, we leverage a mask-guided insertion model as a teacher to distill reliable insertion behavior into the point-guided model. Extensive experiments demonstrate that Point2Insert  consistently outperforms strong baselines and even surpasses models with x10 more parameters.
+        </p>
+        </div>
+    </div>
+    <!-- </section> -->
+    <!-- <div class="container">
+        <h1 class="subtitle"><span class="gradient">Comparison with Previous Works</span></h1>
+        <h2>Text-guided Stylization</h2>
+        <div class="video-container">
+            <div class="video-item">
+                <video src="01_qual_cmp_text_guided_A.mp4" autoplay muted loop></video>
+            </div>
+            <div class="video-item">
+                <video src="02_qual_cmp_text_guided_B.mp4" autoplay muted loop></video>
+            </div>
+        </div> -->
+    <div class="container">
+  
+        <h1 class="subtitle"><span class="gradient">Different Object Categories</span></h1>
+
+
+        <h2>Food</h2>
+        <div class="container" style="margin-top: -32px;">
+            <div class="video-grid-3">
+                
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/17_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/17_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a red apple...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/30_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/30_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a hamburger with a round bun, layered fillings...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/39_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/39_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a red strawberry...</span>
+                </div>
+            </div>
+        </div>
+
+        <h2>Accessories</h2>
+        <div class="container" style="margin-top: -32px;">
+            <div class="video-grid-3">
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/59_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/59_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a pair of wide rimmed sunglasses...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/10_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/10_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a hat from natural straw fibers...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/23_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/23_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a sunglasses on the woman’s face...</span>
+                </div>       
+            </div>
+        </div>
+        <h2>Human</h2>
+        <div class="container" style="margin-top: -32px;">
+            <div class="video-grid-3">
+                
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/14_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/14_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a woman in red coat...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/20_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/20_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a seated man leaning slightly forward, holding a phone...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/41_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/41_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a woman wearing brown clothing...</span>
+                </div>
+            </div>
+        </div>
+        
+
+
+        <h2>Animal</h2>
+        <div class="container" style="margin-top: -32px;">
+            <div class="video-grid-3">
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/21_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/21_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a orange colored dog with medium build...</span>
+                </div>
+
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/36_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/36_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a gray wolf...</span>
+                </div>
+
+
+
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/19_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/19_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a sheep with a rounded body covered in thick curly wool...</span>
+                </div>
+            </div>
+        </div>
+        
+        <h2>Scenery</h2>
+        <div class="container" style="margin-top: -32px;">
+            <div class="video-grid-3">
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/57_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/57_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">soft fluffy cloud clusters with irregular edges...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/11_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/11_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a house...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/60_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/60_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">several cloud clusters in irregular fluffy masses...</span>
+                </div>
+            </div>
+        </div>
+        
+        
+        <h1 class="subtitle"><span class="gradient">Different Object Settings</span></h1>
+        <h2>Indoor Object</h2>
+        <div class="container" style="margin-top: -32px;">
+            <div class="video-grid-3">
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/29_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/29_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a white ceramic mug with cylindrical body...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/53_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/53_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a white round clock face...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/37_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/37_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a plate of cookies with multiple round pieces arranged neatly...</span>
+                </div>
+            </div>
+        </div>
+        
+        
+        <h2>Outdoor Object</h2>
+        <div class="container" style="margin-top: -32px;">
+            <div class="video-grid-3">
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/6_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/6_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a hot air balloon...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/62_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/62_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a large ship sailing on the water with a long wide hul...</span>
+                </div>
+                
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/31_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/31_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">an office building with tall rectangular form...</span>
+                </div>
+            </div>
+        </div>
+
+
+        <h2>Tiny Object</h2>
+        <div class="container" style="margin-top: -32px;">
+            <div class="video-grid-3">
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/7_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/7_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a necklace...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/38_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/38_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a mechanical wristwatch...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/4_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/4_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a circular watch...</span>
+                </div>
+            </div>
+        </div>
+
+        <h2>Static Object</h2>
+        <div class="container" style="margin-top: -32px;">
+            <div class="video-grid-3">
+                         
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/63_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/63_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a transparent glass cup filled with clear water...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/25_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/25_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">an open laptop computer with a thin screen...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/26_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/26_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a white plate with round flat shape...</span>
+                </div>
+            </div>
+        </div>
+
+            <h2>Graphic Decoration</h2>
+        <div class="container" style="margin-top: -32px;">
+            <div class="video-grid-3">
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/54_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/54_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a smiling face icon displayed on a computer scree...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/3_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/3_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a smiley icon...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/1_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/1_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">some decorative stickers...</span>
+                </div>
+            </div>
+        </div>
+
+        <h1 class="subtitle"><span class="gradient">Different Challenging Scenarios</span></h1>
+
+        <h2>Rigid Motion</h2> 
+        <div class="container" style="margin-top: -32px;">
+            <div class="video-grid-3">
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/16_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/16_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a baseball cap...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/56_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/56_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a soft knitted beanie with a rounded top...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/34_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/34_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a red Christmas hat...</span>
+                </div>         
+            </div>
+        </div>
+
+
+
+
+        <h2>Nonrigid Motion</h2>
+        <div class="container" style="margin-top: -32px;">
+            <div class="video-grid-3">
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/50_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/50_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a small tropical fish with a flat body...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/13_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/13_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a white dog...</span>
+                </div>                
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/44_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/44_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a large waterfowl with a long curved neck...</span>
+                </div>
+            </div>
+        </div>
+        
+        <h2>Moving Camera</h2>
+        <div class="container" style="margin-top: -32px;">
+            <div class="video-grid-3">
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/22_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/22_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a black teapot with rounded body...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/24_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/24_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a white cushion placed on a sofa...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/2_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/2_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a wall clock...</span>
+                </div>
+            </div>
+        </div>
+
+
+        <h2>Light & Shadow</h2>
+        <div class="container" style="margin-top: -32px;">
+            <div class="video-grid-3">
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/55_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/55_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a round pet water bowl filled with water...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/61_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/61_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a long red carpet with dense soft pile...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/45_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/45_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a small oval computer mouse...</span>
+                </div>
+            </div>
+        </div>
+        
+        <h2>Reflection & Refraction</h2>
+        <div class="container" style="margin-top: -32px;">
+            <div class="video-grid-3">
+
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/5_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/5_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a clear, cylindrical glass...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/47_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/47_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a transparent cup filled with colored juice...</span>
+                </div>      
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/64_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/64_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a transparent glass cup filled with clear water...</span>
+                </div>
+
+            </div>
+        </div>
+        
+
+        
+        <!-- <h1 class="subtitle"><span class="gradient">More Results</span></h1>
+        <div class="container" style="margin-top: -32px;">
+            <div class="video-grid-3">
+
+
+
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/8_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/8_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a stuffed monkey toy...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/9_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/9_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a domestic dog...</span>
+                </div>
+                
+
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/12_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/12_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a deep, hemispherical bowl...</span>
+                </div>
+
+
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/15_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/15_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a stuffed rabbit toy...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/18_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/18_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a tennis ball with a bright yellow green fuzzy surface...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/27_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/27_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a golden fox with slim body, soft fur...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/28_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/28_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a stack of documents piled together...</span>
+                </div>
+
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/32_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/32_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a group of fresh vegetables...</span>
+                </div>
+
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/42_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/42_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a wooden pencil...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/43_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/43_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a small white golf ball...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/46_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/46_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a spherical soccer ball...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/49_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/49_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a round pot with flowering stems rising above, layered petals on the blooms...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/51_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/51_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a dog seen from behind, walking forward with visible back and tail...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/52_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/52_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a small dog with a sturdy body...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/48_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/48_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">several white fluffy cloud patches...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/33_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/33_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">white clouds floating in the sky with soft rounded shapes...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/35_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/35_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a yellow banana placed on a table...</span>
+                </div>
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/40_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/40_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a pine cone with an oval tapered shape...</span>
+                </div> 
+                <div class="video-grid-item">
+                    <div class="video-pair">
+                        <video src="assets/videos/58_src.mp4" autoplay muted loop></video>
+                        <video src="assets/videos/58_vid.mp4" autoplay muted loop></video>
+                    </div>
+                    <span style="color: white;">a pair of black framed sunglasses with dark gray lenses...</span>
+                </div> 
+            </div>
+        </div> -->
+
+
+    </div>
+    <div class="container" style="box-shadow: 1px 1px 8px gray; max-width: 960px; margin-bottom: 32px;">
+        <h1 style="margin-top: -8px; color: white;">Anonymous Submission</h1>
+        <p style="margin-top: -8px; color: white;">This is an anonymous submission for review purposes. The authors' identities have been removed to ensure blind peer review. All content is presented for evaluation only.</p>
+    </div>
+
+
+
+</body>
+</html>
